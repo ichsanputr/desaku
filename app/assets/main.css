@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'General Sans';
+    src: url('./fonts/GeneralSans-Variable.woff2') format('woff2'),
+        url('./fonts/GeneralSans-Variable.woff') format('woff'),
+        url('./fonts/GeneralSans-Variable.ttf') format('truetype');
+    font-weight: 200 700;
+    font-display: swap;
+    font-style: normal;
+}
+
+html, body {
+    font-family: 'General Sans', sans-serif !important;
+    scroll-behavior: smooth;
+}
+
+.ql-toolbar.ql-snow {
+    border-radius: 6px 6px 0 0;
+}
+
+.quill-content p:has(img) {
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.ql-editor {
+    font-family: 'General Sans', sans-serif !important;
+}
+
+.ql-container {
+    border-radius: 0 0 6px 6px;
+}
+
+.quill-content p:has(br) {
+    font-size: 90px !important;
+    line-height: 16px
+}
+
+.quill-content a {
+    font-weight: 500;
+}
+
+.ql-editor > ol {
+    font-size: 14px;
+}
+
+ol {
+    margin: 1.5rem 2rem;
+    list-style-type: decimal;
+    font-size: 16px;
+}
+
+
+a {
+    color: #0088CC;
+}
+
+p span, p, td, ol, li{
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.8rem;
+}
+
+td {
+    font-size: 14px;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.v-btn__content span {
+    font-family: 'General Sans', sans-serif;
+}
+
+.v-btn--variant-elevated {
+    box-shadow: none !important;
+}
+
+.v-btn {
+    border-radius: 6px !important;
+}
+
+.scale-enter-active,
+.scale-leave-active {
+    transition: all 0.6s ease;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+p img {
+    margin-bottom: 16px;
+    border-radius: 10px;
+}
+
+@media screen and (max-width: 600px) {
+    p span, p, td, ol, li {
+        word-wrap: break-word;
+        font-size: 14px;
+        line-height: 1.8rem;
+    }
+}
