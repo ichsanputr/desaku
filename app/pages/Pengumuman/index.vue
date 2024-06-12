@@ -21,7 +21,7 @@ pageLength.value = Math.ceil(total / 5)
 async function changePage() {
     const { data } = await $fetch(`/api/pengumuman?limit=5&page=${page.value}`)
 
-    announcements.value = da0ta
+    announcements.value = data
 
     if (navigator.userAgent.includes("Chrome")) {
         window.scrollTo({ behavior: "smooth", top: 0, left: 0 })

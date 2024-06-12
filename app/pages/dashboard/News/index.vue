@@ -20,8 +20,8 @@ export default {
             headers: [
                 { title: 'Title', align: 'start', sortable: false, key: 'title', width: "250" },
                 { title: 'Category', align: 'start', key: 'name' },
-                { title: 'Description', align: 'end', key: 'description'},
-                { title: 'Thumbnail', align: 'end', key: 'thumbnail' },
+                { title: 'Description', align: 'start', key: 'description'},
+                { title: 'Thumbnail', align: 'start', key: 'thumbnail' },
                 { title: 'Created By', align: 'start', key: 'created_by', width: "150" },
                 { title: 'Actions', align: 'center', key: 'actions', sortable: false },
             ],
