@@ -5,6 +5,7 @@ import { useDropzone } from "vue3-dropzone";
 const loading = ref(false)
 const currentTab = ref("listImage")
 const images = ref([])
+const loaderRemove = ref(false)
 const imageSelected = ref(null)
 const emit = defineEmits(['onImageSelected', 'onCloseModal'])
 
@@ -19,7 +20,7 @@ async function loadImages() {
         },
     })
 
-    imageSelected.value = images.value["0"]
+    imageSelected.value = images.value[0]
 }
 
 async function onDrop(files) {
@@ -43,20 +44,20 @@ async function onDrop(files) {
 }
 
 async function removeImage() {
-    imageSelected.value = imageSelected.value.replace(useRuntimeConfig().public.API_PUBLIC_URL + '/storage/', '')
-
-    await $fetch(useRuntimeConfig().public.API_PUBLIC_URL + '/api/image/' + imageSelected.value, {
+    loaderRemove.value = true
+    await $fetch(useRuntimeConfig().public.API_PUBLIC_URL + '/api/image/' + imageSelected.value.image_id, {
         method: "DELETE",
         headers: {
             Authorization: "Bearer " + useToken().token
         },
     })
+    loaderRemove.value = false
 
     await loadImages()
 }
 
 function useImage() {
-    emit('onImageSelected', imageSelected.value);
+    emit('onImageSelected', imageSelected.value.url);
     emit('onCloseModal')
 }
 
@@ -113,23 +114,24 @@ export default {
                         <div class="bg-[#F6F7F7] flex-1 px-6 pt-4">
                             <div class="text-xl font-semibold mb-4">Gambar Dipilih</div>
                             <v-img v-if="imageSelected" width="100%" class="rounded-md" aspect-ration="1"
-                                :lazy-src="imageSelected" :src="imageSelected" />
+                                :lazy-src="imageSelected.url" :src="imageSelected.url" />
                             <div class="flex pb-4">
                                 <v-btn @click="useImage" color="#10B981"
                                     class="w-fit mt-6 text-white px-3 mx-1 mb-2 py-2 text-md">
                                     <span class="capitalize">Pilih Gambar</span></v-btn>
                                 <v-btn @click="removeImage" color="#FC4100"
                                     class="w-fit mt-6 text-white px-1 mx-1 mb-2 py-2 text-md">
-                                    <IconsTrash />
+                                    <IconsTrash v-if="!loaderRemove" />
+                                    <Loader v-else />
                                 </v-btn>
                             </div>
                         </div>
-                        <div :class="$vuetify.display.mobile ? 'mt-10' : 'mt-0'" class="w-full md:w-3/4 md:mt-1 px-3 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div :class="$vuetify.display.mobile ? 'mt-10' : 'mt-0'" class="w-full md:w-3/4 md:mt-1 px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
                             <div @click="imageSelected = image"
                                 :class="{ 'border-4 border-[#10B981]': imageSelected == image }"
-                                class="relative rounded-lg cursor-pointer items-center flex" v-for="image in images">
-                                <v-img width="100%" class="rounded-md" aspect-ratio="1" cover :lazy-src="image"
-                                    :src="image" />
+                                class="relative h-fit rounded-lg cursor-pointer items-center flex" v-for="image in images">
+                                <v-img width="100%" class="rounded-md" aspect-ratio="1" cover :lazy-src="image.url"
+                                    :src="image.url" />
                                 <svg v-if="imageSelected == image" class="rounded-md absolute right-[2px] top-0"
                                     xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 16 16">
                                     <path fill="#10B981"

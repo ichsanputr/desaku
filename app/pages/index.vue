@@ -15,7 +15,7 @@ images.value = await $fetch('/api/image-homepage')
 perangkatDesa.value = await $fetch('/api/perangkat-desa')
 
 function backgroundImage(url) {
-    return `background-image: url(${url});`
+    return `background-image: url('${url}');`
 }
 
 definePageMeta({

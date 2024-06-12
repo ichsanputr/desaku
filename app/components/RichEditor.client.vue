@@ -27,7 +27,7 @@ export default {
                                 method: "POST"
                             })
                                 .then(res => {
-                                    resolve(res.data);
+                                    resolve(res.url);
                                 })
                                 .catch(err => {
                                     reject("Upload failed");

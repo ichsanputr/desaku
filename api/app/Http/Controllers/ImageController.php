@@ -61,7 +61,8 @@ class ImageController extends Controller
                 ]);
 
                 return response()->json([
-                    "msg" => "Success upload file!"
+                    "msg" => "Success upload file!",
+                    "url" => $body['url']
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
