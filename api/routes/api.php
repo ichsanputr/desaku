@@ -107,7 +107,7 @@ Route::middleware(['jwt'])->group(function () {
     Route::delete('/activities/{id}', [InformasiPublikController::class, 'removeActivities']);
     Route::delete('/news-category/{id}', [InformasiPublikController::class, 'removeNewsCategory']);
     Route::delete('/image-homepage/{id}', [GambarBerandaController::class, 'removeImageHomepage']);
-    Route::delete('/image/{file}', [ImageController::class, 'remove']);
+    Route::delete('/image/{id}', [ImageController::class, 'remove']);
     Route::delete('/perangkat-desa/{id}', [PerangkatDesaController::class, 'removePerangkatDesa']);
     Route::delete('/potensi-desa/{id}', [PotensiDesaController::class, 'removePotensiDesa']);
     Route::delete('/potensi-category/{id}', [PotensiDesaController::class, 'removePotensiCategory']);

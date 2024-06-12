@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
+use \Carbon\Carbon;
 
 class ImageController extends Controller
 {
@@ -11,25 +13,61 @@ class ImageController extends Controller
     {
         $fileExt = $request->file('image')->getClientOriginalExtension();
 
-        if ($request->file('image')->getSize() / (1024 * 1024) > 1.1){
+        if ($request->file('image')->getSize() / (1024 * 1024) > 1.1) {
             return response()->json([
                 "code" => "FILE_SIZE"
             ], 403);
         }
 
-        if (!in_array($fileExt, ['webp', 'svg','jpg', 'jpeg', 'png'])){
+        if (!in_array($fileExt, ['webp', 'svg', 'jpg', 'jpeg', 'png'])) {
             return response()->json([
                 "code" => "FILE_EXT"
             ], 403);
         }
 
+        $client = new Client();
+        $url = "https://upload.imagekit.io/api/v2/files/upload";
+
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public', $imageName); 
-            return response()->json([
-                'data' => env('APP_URL') . "/storage/" . $imageName
-            ]);
+            $image = base64_encode(file_get_contents($request->file('image')));
+
+            try {
+                $response = $client->post($url, [
+                    'multipart' => [
+                        [
+                            'name' => 'file',
+                            'contents' => $image,
+                        ],
+                        [
+                            'name' => 'fileName',
+                            'contents' => $request->file('image')->getClientOriginalName(),
+                        ],
+                        [
+                            'name' => 'folder',
+                            'contents' => '/desaku',
+                        ],
+                    ],
+                    'auth' => [env("IMAGEKIT_PRIVATE_KEY"), null]
+                ]);
+
+                $body = $response->getBody();
+                $body = json_decode($body, true);
+
+                DB::table('gambar')->insert([
+                    'uuid' => uuid_create(),
+                    'url' => $body['url'],
+                    'image_id' => $body['fileId'],
+                    'created_at' => Carbon::now(),
+                ]);
+
+                return response()->json([
+                    "msg" => "Success upload file!"
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         } else {
             return "No image uploaded!";
         }
@@ -37,26 +75,37 @@ class ImageController extends Controller
 
     public function get()
     {
-        $data = Storage::files('public');
+        $data = DB::table('gambar')->orderBy('created_at', 'desc')->get();
 
-        $data = array_filter($data, function($file) {
-            $extension = pathinfo($file, PATHINFO_EXTENSION);
-            return in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
-        });
-
-        $data = array_map(function ($val) {
-            return env('APP_URL') . '/' . str_replace("public", "storage", $val) ;
-        }, $data);
-
-        return response()->json(array_reverse($data));
+        return response()->json($data);
     }
 
-    public function remove($file)
+    public function remove($id)
     {
-        if (Storage::disk('public')->exists($file)) {
-            Storage::disk('public')->delete($file);
+        if (!$id) {
+            abort(400);
         }
 
-        return "Image deleted";
+        $client = new Client();
+        $url = "https://api.imagekit.io/v1/files/" . $id;
+
+        try {
+            $response = $client->delete($url, [
+                'auth' => [env("IMAGEKIT_PRIVATE_KEY"), null]
+            ]);
+
+            $body = $response->getBody();
+            $body = json_decode($body, true);
+
+            DB::table('gambar')->where("image_id", $id)->delete();
+
+            return response()->json([
+                "msg" => "Success delete file!"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
